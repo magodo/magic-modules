@@ -420,6 +420,12 @@
       <a href="/docs/providers/google/r/compute_disk.html">google_compute_disk</a>
       </li>
 
+<% unless version == 'ga' %>
+      <li<%%= sidebar_current("docs-google-compute-external-vpn-gateway") %>>
+      <a href="/docs/providers/google/r/compute_external_vpn_gateway.html">google_compute_external_vpn_gateway</a>
+      </li>
+
+<% end -%>
       <li<%%= sidebar_current("docs-google-compute-firewall") %>>
       <a href="/docs/providers/google/r/compute_firewall.html">google_compute_firewall</a>
       </li>
@@ -507,6 +513,10 @@
       </li>
 
 <% unless version == 'ga' %>
+      <li<%%= sidebar_current("docs-google-compute-network-endpoint") %>>
+      <a href="/docs/providers/google/r/compute_network_endpoint.html">google_compute_network_endpoint</a>
+      </li>
+
       <li<%%= sidebar_current("docs-google-compute-network-endpoint-group") %>>
       <a href="/docs/providers/google/r/compute_network_endpoint_group.html">google_compute_network_endpoint_group</a>
       </li>
@@ -540,6 +550,12 @@
       <a href="/docs/providers/google/r/compute_region_instance_group_manager.html">google_compute_region_instance_group_manager</a>
       </li>
 
+<% unless version == 'ga' %>
+      <li<%%= sidebar_current("docs-google-compute-resource-policy") %>>
+      <a href="/docs/providers/google/r/compute_resource_policy.html">google_compute_resource_policy</a>
+      </li>
+
+<% end -%>
       <li<%%= sidebar_current("docs-google-compute-route-x") %>>
       <a href="/docs/providers/google/r/compute_route.html">google_compute_route</a>
       </li>
@@ -920,6 +936,10 @@
 
       <li<%%= sidebar_current("docs-google-logging-organization-sink") %>>
       <a href="/docs/providers/google/r/logging_organization_sink.html">google_logging_organization_sink</a>
+      </li>
+
+      <li<%%= sidebar_current("docs-google-logging-metric") %>>
+      <a href="/docs/providers/google/r/logging_metric.html">google_logging_metric</a>
       </li>
 
       <li<%%= sidebar_current("docs-google-logging-project-exclusion") %>>

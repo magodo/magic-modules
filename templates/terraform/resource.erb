@@ -194,6 +194,7 @@ func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.Res
 <%  end -%>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <%  unless sdk_operation.async -%>
     if _, err := <%= build_sdk_func_invocation(sdk_operation) -%>; err != nil {
         return <%= lines(build_errorf_with_resource_name("Error creating %s", true, sdk_operation, properties, object)) -%>
@@ -202,6 +203,9 @@ func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.Res
     future, err := <%= lines(build_sdk_func_invocation(sdk_operation)) -%>
 =======
     url, err := replaceVars(d, config, "<%= object.full_create_url -%>")
+=======
+    url, err := replaceVars(d, config, "<%= "{{#{object.__product.name}BasePath}}#{object.create_uri}" -%>")
+>>>>>>> master
     if err != nil {
         return err
     }
@@ -267,12 +271,12 @@ func resource<%= resource_name -%>Read(d *schema.ResourceData, meta interface{})
 =======
     config := meta.(*Config)
 
-    url, err := replaceVars(d, config, "<%= object.self_link_url -%>")
+    url, err := replaceVars(d, config, "<%= "{{#{object.__product.name}BasePath}}#{object.self_link_uri}" -%>")
     if err != nil {
         return err
     }
 
-    res, err := sendRequest(config, "GET", url, nil)
+res, err := sendRequest(config, "<%= object.read_verb.to_s.upcase -%>", url, nil)
     if err != nil {
         return handleNotFoundError(err, d, fmt.Sprintf("<%= resource_name -%> %q", d.Id()))
     }
@@ -425,7 +429,7 @@ if <%= props.map { |prop| "d.HasChange(\"#{prop.name.underscore}\")" }.join ' ||
         defer mutexKV.Unlock(lockName)
 <%      end -%>
 
-        url, err := replaceVars(d, config, "<%= update_url(object, key[:update_url]) -%>")
+        url, err := replaceVars(d, config, "<%= "{{#{object.__product.name}BasePath}}#{update_uri(object, key[:update_url])}" -%>")
         if err != nil {
             return err
         }
@@ -510,9 +514,24 @@ if <%= props.map { |prop| "d.HasChange(\"#{prop.name.underscore}\")" }.join ' ||
 <%  end -%>
 >>>>>>> master
 
+<<<<<<< HEAD
 <%  unless sdk_operation.async -%>
     if _, err := <%= build_sdk_func_invocation(sdk_operation) -%>; err != nil {
         return <%= lines(build_errorf_with_resource_name("Error updating %s", true, sdk_operation, properties, object)) -%>
+=======
+<%  if object.mutex -%>
+    lockName, err := replaceVars(d, config, "<%= object.mutex -%>")
+    if err != nil {
+        return err
+    }
+    mutexKV.Lock(lockName)
+    defer mutexKV.Unlock(lockName)
+<%  end -%>
+
+    url, err := replaceVars(d, config, "<%= "{{#{object.__product.name}BasePath}}#{update_uri(object, object.update_url)}" -%>")
+    if err != nil {
+        return err
+>>>>>>> master
     }
 <<<<<<< HEAD
 <%  else -%>
@@ -590,6 +609,7 @@ func resource<%= resource_name -%>Delete(d *schema.ResourceData, meta interface{
 <%  end -%>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <%= lines(build_azure_id_parser(sdk_operation, object)) -%>
 
 <%  unless sdk_operation.async -%>
@@ -600,6 +620,9 @@ func resource<%= resource_name -%>Delete(d *schema.ResourceData, meta interface{
     future, err := <%= lines(build_sdk_func_invocation(sdk_operation)) -%>
 =======
     url, err := replaceVars(d, config, "<%= object.full_delete_url -%>")
+=======
+    url, err := replaceVars(d, config, "<%= "{{#{object.__product.name}BasePath}}#{object.delete_uri}" -%>")
+>>>>>>> master
     if err != nil {
         return err
     }

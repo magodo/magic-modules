@@ -387,5 +387,10 @@ module Provider
         parts.map { |pt| object.all_user_properties.select { |p| p.name == pt }[0] }
       end.flatten
     end
+
+    # Convert a URL to a regex.
+    def regex_url(url)
+      url.gsub(/{{[a-z]*}}/, '.*')
+    end
   end
 end

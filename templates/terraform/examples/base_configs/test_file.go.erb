@@ -206,17 +206,22 @@ func testAccCheck<%= resource_name -%>Destroy(s *terraform.State) error {
     ctx := testAccProvider.Meta().(*ArmClient).StopContext
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     for _, rs := range s.RootModule().Resources {
         if rs.Type != "<%= terraform_name -%>" {
             continue
         }
 =======
 	url, err := replaceVarsForTest(rs, "<%= object.self_link_url -%>")
+=======
+	url, err := replaceVarsForTest(rs, "<%= "{{#{object.__product.name}BasePath}}#{object.self_link_uri}" -%>")
+>>>>>>> master
 	if err != nil {
 		return err
 	}
 >>>>>>> master
 
+<<<<<<< HEAD
 <%= lines(build_acctest_parameters_from_schema(object.azure_sdk_definition.read, properties)) -%>
 
         if resp, err := <%= build_sdk_func_invocation(object.azure_sdk_definition.read) -%>; err != nil {
@@ -230,6 +235,13 @@ func testAccCheck<%= resource_name -%>Destroy(s *terraform.State) error {
 
     return nil
 }
+=======
+	_, err = sendRequest(config, "<%= object.read_verb.to_s.upcase -%>", url, nil)
+	if err == nil {
+			return fmt.Errorf("<%= resource_name -%> still exists at %s", url)
+		}
+	}
+>>>>>>> master
 
 <%
     if contains_acctests
