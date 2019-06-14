@@ -69,7 +69,7 @@ author:
 '''
 
 <%  unless object.examples.empty? -%>
-<%    code = object.examples.map{|exref| lines(build_documentation_yaml_from_example(get_example_by_reference(exref)))} -%>
+<%    code = object.examples.map{|exref| lines(build_documentation_yaml_from_example(exref))} -%>
 EXAMPLES = '''
 <%=   lines(indent(code.join("\n"), 2)) -%>
 '''
@@ -80,7 +80,7 @@ RETURN = '''
 '''
 
 import time
-from ansible.module_utils.azure_rm_common import <%= lines('normalize_location_name') if is_location_defined?(object) -%>
+<%= lines('from ansible.module_utils.azure_rm_common import normalize_location_name') if is_location_defined?(object) -%>
 from ansible.module_utils.azure_rm_common_ext import AzureRMModuleBaseExt
 from ansible.module_utils.common.dict_transformations import _snake_to_camel
 =======

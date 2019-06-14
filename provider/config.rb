@@ -66,8 +66,13 @@ module Provider
                                     config.property_override)
       config.spread_api config, api, [], '' unless api.nil?
       config.validate
+<<<<<<< HEAD
       api.validate
       [api, config]
+=======
+      config.cfg_file = cfg_file
+      config
+>>>>>>> azure_backend
     end
 
     def provider

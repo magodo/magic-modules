@@ -704,6 +704,7 @@ func resource<%= resource_name -%>Import(d *schema.ResourceData, meta interface{
 
 <<<<<<< HEAD
 <%  if object.custom_code.extra_functions -%>
+<<<<<<< HEAD
 <%=   lines(compile(object.custom_code.extra_functions)) -%>
 <%  end -%>
 =======
@@ -724,3 +725,7 @@ func resource<%= resource_name -%>Decoder(d *schema.ResourceData, meta interface
 }
 <% end -%>
 >>>>>>> master
+=======
+<%=   lines(compile(get_custom_template_path(object.custom_code.extra_functions))) -%>
+<%  end -%>
+>>>>>>> azure_backend
