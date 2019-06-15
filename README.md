@@ -169,18 +169,10 @@ functionality.
 
 #### Making changes to handwritten files
 
-<<<<<<< HEAD
-In Windows, run
-
-    bundle exec ruby ./compiler.rb -p products/azresourcegroup -e terraform -o build/azterraform
-
-### Compiling all modules
-=======
 The Google providers for Terraform have a large number of handwritten files,
 written before Magic Modules was used with them. While conversion is ongoing,
 many resources are still managed by hand. You can modify handwritten files
 under the `third_party/terraform` directory.
->>>>>>> master
 
 Features that are only present in certain versions need to be "guarded" by
 wrapping those lines of code in version guards;

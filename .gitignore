@@ -31,11 +31,11 @@
 ehthumbs.db
 Thumbs.db
 
-<<<<<<< HEAD
+# VS Code
 .vscode/
-=======
+
 final_api.yaml
 # Ansible PR Script
 tools/ansible-pr/templates/*
 !tools/ansible-pr/templates/.keep
->>>>>>> master
+
