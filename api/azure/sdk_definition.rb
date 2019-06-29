@@ -16,6 +16,7 @@ module Api
       attr_reader :list_by_parent
       attr_reader :list_by_resource_group
       attr_reader :list_by_subscription
+      attr_reader :list_by_service
 
       def validate
         super
@@ -31,6 +32,7 @@ module Api
         check :list_by_parent, type: Api::Azure::SDKOperationDefinition
         check :list_by_resource_group, type: Api::Azure::SDKOperationDefinition
         check :list_by_subscription, type: Api::Azure::SDKOperationDefinition
+        check :list_by_service, type: Api::Azure::SDKOperationDefinition
       end
 
       def filter_language!(language)
