@@ -69,10 +69,16 @@ module Provider
             @random_variables.last.format_string
           end
 
-          def get_storage_account()
+          def get_storage_account_name()
             return name_hints["storageAccounts"] if name_hints.has_key?("storageAccounts")
             @random_variables <<= RandomizedVariable.new(:AccStorageAccount)
             "acctestsa#{@random_variables.last.format_string}"
+          end
+
+          def get_batch_account_name()
+            return name_hints["batchAccounts"] if name_hints.has_key?("batchAccounts")
+            @random_variables <<= RandomizedVariable.new(:AccBatchAccount)
+            "acctestba#{@random_variables.last.format_string}"
           end
         end
 
@@ -100,12 +106,19 @@ module Provider
               @create_expression = "strings.ToLower(acctest.RandString(11))"
               @format_string = "%s"
               @declare_order = 1
+            when :AccBatchAccount
+              @variable_name = "rs"
+              @parameter_name = "rString"
+              @go_type = "string"
+              @create_expression = "strings.ToLower(acctest.RandString(11))"
+              @format_string = "%s"
+              @declare_order = 2
             when :AccLocation
               @variable_name = @parameter_name = "location"
               @go_type = "string"
               @create_expression = "testLocation()"
               @format_string = "%s"
-              @declare_order = 2
+              @declare_order = 3
             end
           end
         end
