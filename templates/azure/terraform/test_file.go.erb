@@ -4,8 +4,10 @@ package azurerm
 
 import (
     "fmt"
+    "strings"
     "testing"
 
+    "github.com/hashicorp/terraform/helper/acctest"
     "github.com/hashicorp/terraform/helper/resource"
     "github.com/hashicorp/terraform/terraform"
     "github.com/terraform-providers/terraform-provider-azurerm/azurerm/helpers/tf"
@@ -30,7 +32,7 @@ import (
 -%>
 func TestAcc<%= resource_name -%>_<%= test.name -%>(t *testing.T) {
     resourceName := "<%= terraform_name -%>.test"
-<%      test.steps.map{|step| test_hcls[step][:random_vars]}.flatten.uniq(&:variable_name).each do |param| -%>
+<%      test.steps.map{|step| test_hcls[step][:random_vars]}.flatten.uniq(&:variable_name).sort_by(&:declare_order).each do |param| -%>
     <%=   param.variable_name -%> := <%= lines(param.create_expression) -%>
 <%      end -%>
 
@@ -40,7 +42,7 @@ func TestAcc<%= resource_name -%>_<%= test.name -%>(t *testing.T) {
         CheckDestroy: testCheck<%= resource_name -%>Destroy,
         Steps: []resource.TestStep{
 <%      test.steps.each do |step| -%>
-<%        hcl_params = test_hcls[step][:random_vars].map(&:variable_name).uniq -%>
+<%        hcl_params = test_hcls[step][:random_vars].uniq(&:variable_name).sort_by(&:declare_order).map(&:variable_name) -%>
 <%        props_to_check = get_example_properties_to_check(step, object) -%>
             {
                 Config: testAcc<%= resource_name -%>_<%= step -%>(<%= hcl_params.join(", ") -%>),
@@ -122,7 +124,7 @@ func testCheck<%= resource_name -%>Destroy(s *terraform.State) error {
 <%
     if contains_acctests
       test_hcls.each do |name, test_hcl|
-        uniq_params = test_hcl[:random_vars].uniq(&:parameter_name).map{|p| "#{p.parameter_name} #{p.go_type}"}
+        uniq_params = test_hcl[:random_vars].uniq(&:parameter_name).sort_by(&:declare_order).map{|p| "#{p.parameter_name} #{p.go_type}"}
 -%>
 func testAcc<%= resource_name -%>_<%= name -%>(<%= uniq_params.join(", ") -%>) string {
     return fmt.Sprintf(`

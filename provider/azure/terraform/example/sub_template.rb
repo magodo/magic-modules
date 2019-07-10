@@ -68,6 +68,12 @@ module Provider
             @random_variables <<= RandomizedVariable.new(:AccLocation)
             @random_variables.last.format_string
           end
+
+          def get_storage_account()
+            return name_hints["storageAccounts"] if name_hints.has_key?("storageAccounts")
+            @random_variables <<= RandomizedVariable.new(:AccStorageAccount)
+            "acctestsa#{@random_variables.last.format_string}"
+          end
         end
 
         class RandomizedVariable
@@ -76,6 +82,7 @@ module Provider
           attr_reader :go_type
           attr_reader :create_expression
           attr_reader :format_string
+          attr_reader :declare_order
 
           def initialize(type)
             case type
@@ -85,11 +92,20 @@ module Provider
               @go_type = "int"
               @create_expression = "tf.AccRandTimeInt()"
               @format_string = "%d"
+              @declare_order = 0
+            when :AccStorageAccount
+              @variable_name = "rs"
+              @parameter_name = "rString"
+              @go_type = "string"
+              @create_expression = "strings.ToLower(acctest.RandString(11))"
+              @format_string = "%s"
+              @declare_order = 1
             when :AccLocation
               @variable_name = @parameter_name = "location"
               @go_type = "string"
               @create_expression = "testLocation()"
               @format_string = "%s"
+              @declare_order = 2
             end
           end
         end
