@@ -14,7 +14,7 @@ module Api
           default_order = 1 if @name == "name"
           default_order = -1 if @name == "id"
           check :order, type: ::Integer, default: default_order
-          check :azure_sdk_references, type: ::Array, item_type: ::String, required: true
+          check :azure_sdk_references, type: ::Array, item_type: ::String
         end
       end
 
