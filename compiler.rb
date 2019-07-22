@@ -41,6 +41,7 @@ provider_name = nil
 force_provider = nil
 types_to_generate = []
 version = 'ga'
+$target_is_azure = false
 
 ARGV << '-h' if ARGV.empty?
 Google::LOGGER.level = Logger::INFO
@@ -70,6 +71,11 @@ OptionParser.new do |opt|
   end
   opt.on('-v', '--version VERSION', 'API version to generate') do |v|
     version = v
+  end
+  opt.on('-c', '--cloud CLOUD', 'Target cloud platform ("gcp" for Google Cloud Platform or 
+    "azure" for Microsoft Azure Cloud, "gcp" by default)') do |c|
+    $target_is_azure = true if c == 'azure'
+    raise 'Option -c/--cloud must be either "gcp" or "azure"' if c != 'gcp' && c != 'azure'
   end
   opt.on('-h', '--help', 'Show this message') do
     puts opt
@@ -153,9 +159,9 @@ end
 # In order to only copy/compile files once per provider this must be called outside
 # of the products loop. This will get called with the provider from the final iteration
 # of the loop
-
-# TODO: Azure Swith
-#provider&.copy_common_files(output_path, version)
-#provider&.compile_common_files(output_path, version)
+unless $target_is_azure
+  provider&.copy_common_files(output_path, version)
+  provider&.compile_common_files(output_path, version)
+end
 
 # rubocop:enable Metrics/BlockLength

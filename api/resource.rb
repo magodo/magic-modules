@@ -182,7 +182,7 @@ module Api
 
       validate_identity unless @identity.nil?
 
-      azure_validate
+      azure_validate if $target_is_azure
     end
 
     # ====================

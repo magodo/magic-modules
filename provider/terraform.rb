@@ -135,62 +135,59 @@ module Provider
     # per resource. The resource.erb template forms the basis of a single
     # GCP Resource on Terraform.
     def generate_resource(data)
-      # TODO: Azure switch
-      azure_generate_resource data
+      # Azure Switch
+      return azure_generate_resource data if $target_is_azure
+      dir = data.version == 'beta' ? 'google-beta' : 'google'
+      target_folder = File.join(data.output_folder, dir)
 
-      # dir = data.version == 'beta' ? 'google-beta' : 'google'
-      # target_folder = File.join(data.output_folder, dir)
+      name = data.object.name.underscore
+      product_name = data.product.name.underscore
+      filepath = File.join(target_folder, "resource_#{product_name}_#{name}.go")
 
-      # name = data.object.name.underscore
-      # product_name = data.product.name.underscore
-      # filepath = File.join(target_folder, "resource_#{product_name}_#{name}.go")
-
-      # data.generate('templates/terraform/resource.erb', filepath, self)
-      # generate_documentation(data)
+      data.generate('templates/terraform/resource.erb', filepath, self)
+      generate_documentation(data)
     end
 
     def generate_documentation(data)
-      # TODO: Azure switch
-      azure_generate_documentation data
+      # Azure Switch
+      return azure_generate_documentation data if $target_is_azure
+      target_folder = data.output_folder
+      target_folder = File.join(target_folder, 'website', 'docs', 'r')
+      FileUtils.mkpath target_folder
+      name = data.object.name.underscore
+      product_name = data.product.name.underscore
 
-      # target_folder = data.output_folder
-      # target_folder = File.join(target_folder, 'website', 'docs', 'r')
-      # FileUtils.mkpath target_folder
-      # name = data.object.name.underscore
-      # product_name = data.product.name.underscore
-
-      # filepath =
-      #   File.join(target_folder, "#{product_name}_#{name}.html.markdown")
-      # data.generate('templates/terraform/resource.html.markdown.erb', filepath, self)
+      filepath =
+        File.join(target_folder, "#{product_name}_#{name}.html.markdown")
+      data.generate('templates/terraform/resource.html.markdown.erb', filepath, self)
     end
 
     def generate_resource_tests(data)
-      # TODO: Azure switch
-      azure_generate_resource_tests data
+      # Azure Switch
+      return azure_generate_resource_tests data if $target_is_azure
+      return if data.object.examples
+                    .reject(&:skip_test)
+                    .reject do |e|
+                  @api.version_obj_or_default(data.version) \
+                < @api.version_obj_or_default(e.min_version)
+                end
+                    .empty?
 
-      # return if data.object.examples
-      #               .reject(&:skip_test)
-      #               .reject do |e|
-      #             @api.version_obj_or_default(data.version) \
-      #           < @api.version_obj_or_default(e.min_version)
-      #           end
-      #               .empty?
+      dir = data.version == 'beta' ? 'google-beta' : 'google'
+      target_folder = File.join(data.output_folder, dir)
 
-      # dir = data.version == 'beta' ? 'google-beta' : 'google'
-      # target_folder = File.join(data.output_folder, dir)
+      name = data.object.name.underscore
+      product_name = data.product.name.underscore
+      filepath =
+        File.join(
+          target_folder,
+          "resource_#{product_name}_#{name}_generated_test.go"
+        )
 
-      # name = data.object.name.underscore
-      # product_name = data.product.name.underscore
-      # filepath =
-      #   File.join(
-      #     target_folder,
-      #     "resource_#{product_name}_#{name}_generated_test.go"
-      #   )
-
-      # data.product = data.product.name
-      # data.resource_name = data.object.name.camelize(:upper)
-      # data.generate('templates/terraform/examples/base_configs/test_file.go.erb',
-      #               filepath, self)
+      data.product = data.product.name
+      data.resource_name = data.object.name.camelize(:upper)
+      data.generate('templates/terraform/examples/base_configs/test_file.go.erb',
+                    filepath, self)
     end
 
     def generate_operation(output_folder, _types, version_name)
