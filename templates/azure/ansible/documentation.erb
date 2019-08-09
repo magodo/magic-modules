@@ -38,7 +38,7 @@ extends_documentation_fragment:
     <%= lines('- azure_tags') if is_tags_defined?(object) && !is_data_source -%>
 
 author:
-    - "<%= @config.author -%>"
+    - <%= lines(@config.author) -%>
 '''
 
 <%  unless object.examples.empty? -%>
@@ -52,7 +52,7 @@ EXAMPLES = '''
     output_hash = output_properties.map{|p| azure_returns_for_property(p, object)}.reduce({}, :merge)
     output_hash = {
       'items' => {
-        'description' => 'List of items',
+        'description' => ['List of items.'],
         'returned' => 'always',
         'type' => 'complex',
         'contains' => output_hash

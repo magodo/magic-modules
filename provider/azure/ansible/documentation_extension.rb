@@ -30,10 +30,12 @@ module Provider
         def azure_returns_for_property(prop, object)
           type = azure_python_type(prop) || 'str'
           type = 'str' if type == 'path' || prop.is_a?(Api::Azure::Type::ResourceReference)
+          type = 'dict' if prop.is_a?(Api::Azure::Type::Tags)
           type = 'complex' if prop.is_a?(Api::Type::NestedObject) \
                               || (prop.is_a?(Api::Type::Array) \
                               && prop.item_type.is_a?(Api::Type::NestedObject))
           sample = prop.document_sample_value || prop.sample_value
+          sample = sample.to_s.underscore if sample.is_a? Symbol
           {
             azure_python_variable_name(prop, object.azure_sdk_definition.create) => {
               'description' => format_description(prop.description),
