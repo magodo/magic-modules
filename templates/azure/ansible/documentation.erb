@@ -35,7 +35,7 @@ description:
 
 extends_documentation_fragment:
     - azure
-    <%= lines('- azure_tags') if is_tags_defined?(object) && !is_data_source -%>
+<%= lines('    - azure_tags') if is_tags_defined?(object) && !is_data_source -%>
 
 author:
     - <%= lines(@config.author) -%>
