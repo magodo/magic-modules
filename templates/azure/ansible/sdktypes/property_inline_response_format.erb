@@ -11,6 +11,9 @@
         py_fields <<= sdk_type_def.python_field_name || property.name.underscore
       end
     end
-    access_chain = py_fields.map{|f| "['#{f}']"}.join
+    access_gets = py_fields[0..-2].map{|f| ".get('#{f}', {})"}
+    access_gets <<= ".get('#{py_fields.last}')"
+    access_chain = 'd' + access_gets.join
+    access_chain = "_camel_to_snake(#{access_chain})" if property.is_a? Api::Type::Enum
 -%>
-'<%= py_var -%>': <%= py_fields.empty? ? "self.#{py_var}" : "d#{access_chain}" -%>,
+'<%= py_var -%>': <%= py_fields.empty? ? "self.#{py_var}" : "#{access_chain}" -%>,
