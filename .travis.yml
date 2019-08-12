@@ -4,9 +4,8 @@ before_install:
 - gem update --system
 - gem install bundler
 
-# TODO: Add Azure validation logic
-# script:
-# - bundle exec rake test
+script:
+- echo "Add Azure validation logic here"
 
 git:
   submodules: false
