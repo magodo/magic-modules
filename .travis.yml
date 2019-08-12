@@ -5,7 +5,7 @@ before_install:
 - gem install bundler
 
 script:
-- echo "Add Azure validation logic here"
+- bundle exec rake lint
 
 git:
   submodules: false
