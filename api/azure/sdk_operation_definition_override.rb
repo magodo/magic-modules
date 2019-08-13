@@ -16,6 +16,7 @@ require 'api/azure/sdk_type_definition_override'
 
 module Api
   module Azure
+    # The CRUDL definitions used in azure_sdk_definition of terraform.yaml or ansible.yaml
     class SDKOperationDefinitionOverride < Api::Object
       attr_reader :request
       attr_reader :response

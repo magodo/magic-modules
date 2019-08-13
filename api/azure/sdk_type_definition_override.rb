@@ -15,6 +15,7 @@ require 'api/object'
 
 module Api
   module Azure
+    # CRUDL operation request/response values in terraform.yaml or ansible.yaml
     class SDKTypeDefinitionOverride < SDKTypeDefinition
       attr_reader :remove
 

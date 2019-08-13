@@ -20,7 +20,7 @@ import (
     input_properties = properties.reject{|p| get_applicable_reference(p.azure_sdk_references, sdk_operation.request).nil?}
     datasource_props = input_properties.map{|p| [p.name.underscore, "${#{terraform_name}.test.#{p.name.underscore}}"]}.to_h
 
-    test_hcls = Hash.new
+    test_hcls = {}
 -%>
 <%
     if object.respond_to? :acctests

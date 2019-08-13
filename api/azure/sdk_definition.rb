@@ -16,6 +16,7 @@ require 'api/azure/sdk_operation_definition'
 
 module Api
   module Azure
+    # The azure_sdk_definition section used in api.yaml
     class SDKDefinition < Api::Object
       attr_reader :provider_name
       attr_reader :go_client_namespace
@@ -47,17 +48,17 @@ module Api
       end
 
       def filter_language!(language)
-        @create.filter_language!(language) unless @create.nil?
-        @read.filter_language!(language) unless @read.nil?
-        @update.filter_language!(language) unless @update.nil?
-        @delete.filter_language!(language) unless @delete.nil?
+        @create&.filter_language!(language)
+        @read&.filter_language!(language)
+        @update&.filter_language!(language)
+        @delete&.filter_language!(language)
       end
 
       def merge_overrides!(overrides)
-        @create.merge_overrides!(overrides.create) if !@create.nil? && !overrides.create.nil?
-        @read.merge_overrides!(overrides.read) if !@read.nil? && !overrides.read.nil?
-        @update.merge_overrides!(overrides.update) if !@update.nil? && !overrides.update.nil?
-        @delete.merge_overrides!(overrides.delete) if !@delete.nil? && !overrides.delete.nil?
+        @create&.merge_overrides!(overrides.create) unless overrides.create.nil?
+        @read&.merge_overrides!(overrides.read) unless overrides.read.nil?
+        @update&.merge_overrides!(overrides.update) unless overrides.update.nil?
+        @delete&.merge_overrides!(overrides.delete) unless overrides.delete.nil?
       end
     end
   end

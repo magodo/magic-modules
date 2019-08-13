@@ -16,8 +16,8 @@ require 'api/azure/sdk_definition'
 
 module Api
   module Azure
+    # The Azure-extended module which will be injected to Api::Resource
     module Resource
-
       # The Azure-extended properties which supplement Api::Resource::Properties
       module Properties
         attr_reader :azure_sdk_definition
@@ -27,7 +27,6 @@ module Api
       def azure_validate
         check :azure_sdk_definition, type: Api::Azure::SDKDefinition, required: true
       end
-
     end
   end
 end

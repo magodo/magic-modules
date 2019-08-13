@@ -22,7 +22,7 @@ import (
 -%>
 
 <%
-    test_hcls = Hash.new
+    test_hcls = {}
     if contains_acctests
       object.acctests.each do |test|
         test.steps.uniq.each do |name|

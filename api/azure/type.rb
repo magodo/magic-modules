@@ -16,7 +16,7 @@ require 'api/type'
 module Api
   module Azure
     module Type
-
+      # Represents an Azure resource group name type used in properties of api.yaml
       class ResourceGroupName < Api::Type::String
         def validate
           @order ||= 3
@@ -24,6 +24,7 @@ module Api
         end
       end
 
+      # Represents an Azure location type used in properties of api.yaml
       class Location < Api::Type::String
         def validate
           @order ||= 5
@@ -31,6 +32,7 @@ module Api
         end
       end
 
+      # Represents an Azure tags type used in properties of api.yaml
       class Tags < Api::Type::KeyValuePairs
         def validate
           @order ||= 20
@@ -38,6 +40,7 @@ module Api
         end
       end
 
+      # Represents an Azure resource ID type used in properties of api.yaml
       class ResourceReference < Api::Type::String
         attr_reader :resource_type_name
 
@@ -47,12 +50,13 @@ module Api
         end
       end
 
+      # Represents an Azure ISO8601 duration string type used in properties of api.yaml
       class ISO8601Duration < Api::Type::String
       end
 
+      # Represents an Azure ISO8601 date time string type used in properties of api.yaml
       class ISO8601DateTime < Api::Type::String
       end
-
     end
   end
 end

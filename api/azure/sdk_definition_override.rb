@@ -16,6 +16,7 @@ require 'api/azure/sdk_operation_definition_override'
 
 module Api
   module Azure
+    # The azure_sdk_definition section used in terraform.yaml or ansible.yaml
     class SDKDefinitionOverride < Api::Object
       attr_reader :create
       attr_reader :read

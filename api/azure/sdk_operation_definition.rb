@@ -16,6 +16,7 @@ require 'api/azure/sdk_type_definition'
 
 module Api
   module Azure
+    # The CRUDL definitions used in azure_sdk_definition of api.yaml
     class SDKOperationDefinition < Api::Object
       attr_reader :go_func_name
       attr_reader :python_func_name
@@ -25,14 +26,22 @@ module Api
 
       def validate
         super
-        @request ||= Hash.new
-        @response ||= Hash.new
+        @request ||= {}
+        @response ||= {}
 
         check :go_func_name, type: ::String, required: true
         check :python_func_name, type: ::String, required: true
         check :async, type: :boolean
-        check_ext :request, type: ::Hash, key_type: ::String, item_type: SDKTypeDefinition, required: true
-        check_ext :response, type: ::Hash, key_type: ::String, item_type: SDKTypeDefinition, required: true
+        check_ext :request,
+                  type: ::Hash,
+                  key_type: ::String,
+                  item_type: SDKTypeDefinition,
+                  required: true
+        check_ext :response,
+                  type: ::Hash,
+                  key_type: ::String,
+                  item_type: SDKTypeDefinition,
+                  required: true
       end
 
       def filter_language!(language)
@@ -48,14 +57,16 @@ module Api
       private
 
       def filter_applicable!(fields, language)
-        fields.reject!{|name, value| !value.applicable_to.nil? && !value.applicable_to.include?(language)}
+        fields.reject! do |_, value|
+          !value.applicable_to.nil? && !value.applicable_to.include?(language)
+        end
       end
 
       def merge_hash_table!(fields, overrides)
         overrides.each do |name, value|
           if value.remove
             fields.delete(name)
-          elsif !fields.has_key?(name)
+          elsif !fields.key?(name)
             fields[name] = value
           else
             fields[name].merge_overrides! value
