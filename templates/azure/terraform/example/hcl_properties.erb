@@ -1,9 +1,15 @@
 <%
     # props_left: [[name_1, val_1], [name_2, val_2], ...]
     props_left = properties.to_a
+    is_first_section = true
     begin
       simple_props = props_left.take_while{|p| !p[1].is_a?(Hash) && !(p[1].is_a?(Array) && p[1].length > 0 && p[1][0].is_a?(Hash))}
       props_left = props_left.drop_while{|p| !p[1].is_a?(Hash) && !(p[1].is_a?(Array) && p[1].length > 0 && p[1][0].is_a?(Hash))}
+
+-%>
+<%=   "\n" if !is_first_section && !simple_props.empty? -%>
+<%
+      is_first_section = false unless simple_props.empty?
 
       prop_alignment = simple_props.map{|p| p[0].length}.max
       simple_props.each do |prop|
@@ -20,13 +26,17 @@
 <%
         end
       end
+
       complex_props = props_left.take_while{|p| p[1].is_a?(Hash) || (p[1].is_a?(Array) && p[1].length > 0 && p[1][0].is_a?(Hash))}
       props_left = props_left.drop_while{|p| p[1].is_a?(Hash) || (p[1].is_a?(Array) && p[1].length > 0 && p[1][0].is_a?(Hash))}
       complex_props.each do |prop|
         blocks = prop[1].is_a?(Array) ? prop[1] : [prop[1]]
         blocks.each do |block|
 -%>
-
+<%=       "\n" unless is_first_section -%>
+<%
+          is_first_section = false
+-%>
 <%=       prop[0] -%> <%= "= " if prop[0] == "tags"-%>{
 <%=       lines(build_hcl_properties(block)) -%>
 }
