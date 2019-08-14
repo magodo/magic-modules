@@ -47,6 +47,17 @@ module Api
         end
       end
 
+      class BooleanEnum < Api::Type::Boolean
+        attr_reader :true_value
+        attr_reader :false_value
+
+        def validate
+          super
+          check :true_value, type: [Symbol], required: true
+          check :false_value, type: [Symbol], required: true
+        end
+      end
+
       class ISO8601Duration < Api::Type::String
       end
 

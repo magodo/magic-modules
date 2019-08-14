@@ -31,12 +31,14 @@
 <%   if force_new?(property, object) && data_source_input.empty? -%>
     ForceNew: true,
 <%   end -%>
-<%   unless property.validation.nil? || property.output -%>
+<%   if !property.validation.nil? && !property.output -%>
 <%     if !property.validation.regex.nil? && (data_source_input.empty? || data_source_input.include?(property)) -%>
     ValidateFunc: validateRegexp(`<%= property.validation.regex -%>`),
 <%     elsif !property.validation.function.nil? && (data_source_input.empty? || data_source_input.include?(property)) -%>
     ValidateFunc: <%= property.validation.function -%>,
 <%     end # property.validation.nil?  -%>
+<%   elsif property.required && property.is_a?(Api::Type::String) && (data_source_input.empty? || data_source_input.include?(property)) -%>
+    ValidateFunc: validate.NoEmptyStrings,
 <%   end # property.validation.nil?  -%>
 <%   if property.is_a?(Api::Type::Enum) && property.validation.nil? && !property.output && (data_source_input.empty? || data_source_input.include?(property)) -%>
 <%
@@ -130,6 +132,8 @@
 <%   unless property.default_value.nil? || !data_source_input.empty? -%>
 <%     if property.is_a?(Api::Type::Enum) -%>
     Default: <%= azure_go_literal((sdk_type.go_enum_const_prefix + property.default_value.to_s).to_sym, sdk_package) -%>,
+<%     elsif property.is_a?(Api::Azure::Type::BooleanEnum) -%>
+    Default: <%= lines((property.default_value == property.true_value).to_s) -%>
 <%     else -%>
     Default: <%= azure_go_literal(property.default_value) -%>,
 <%     end -%>
@@ -140,5 +144,5 @@
 <%   end -%>
 },
 <% else -%>
-  // TODO: Property '<%= property.name -%>' of type <%= property.class -%> is not supported
+// TODO: Property '<%= property.name -%>' of type <%= property.class -%> is not supported in primitive.erb
 <% end # tf_types.include?(property.class) -%>

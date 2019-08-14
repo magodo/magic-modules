@@ -1,0 +1,9 @@
+<%  enum_prefix = get_sdk_typedef_by_references(property.azure_sdk_references, sdk_marshal.sdktype.type_definitions).go_enum_const_prefix -%>
+<%=   output_var -%> := <%= sdk_marshal.package -%>.<%= lines(enum_prefix + property.false_value.to_s) -%>
+<%  if input_var == 'd' -%>
+if d.Get("<%= prop_name -%>").(bool) {
+<%  else -%>
+if <%= input_var -%>["<%= prop_name -%>"].(bool) {
+<%  end -%>
+    <%= output_var -%> = <%= sdk_marshal.package -%>.<%= lines(enum_prefix + property.true_value.to_s) -%>
+}

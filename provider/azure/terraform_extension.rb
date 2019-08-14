@@ -47,6 +47,7 @@ module Provider
 
       def azure_tf_types(map)
         map[Api::Azure::Type::ResourceReference] = 'schema.TypeString'
+        map[Api::Azure::Type::BooleanEnum] = 'schema.TypeBool'
         map
       end
 

@@ -38,6 +38,7 @@ module Provider
           def property_to_sdk_field_assignment_template(property, sdk_type)
             return property.custom_sdkfield_assign unless get_property_value(property, "custom_sdkfield_assign", nil).nil?
             return 'templates/azure/terraform/schemas/hide_from_schema.erb' if get_property_value(property, "hide_from_schema", false)
+            return 'templates/azure/terraform/sdktypes/plain_var_field_assign.erb' if property.is_a?(Api::Azure::Type::BooleanEnum)
             case sdk_type
             when Api::Azure::SDKTypeDefinition::BooleanObject, Api::Azure::SDKTypeDefinition::StringObject,
                  Api::Azure::SDKTypeDefinition::IntegerObject, Api::Azure::SDKTypeDefinition::FloatObject,
@@ -56,6 +57,7 @@ module Provider
           end
 
           def property_to_schema_assignment_template(property, sdk_operation, api_path)
+            return 'templates/azure/terraform/sdktypes/primitive_schema_assign.erb' if property.is_a?(Api::Azure::Type::BooleanEnum)
             sdk_type = sdk_operation.response[api_path] || sdk_operation.request[api_path]
             case sdk_type
             when Api::Azure::SDKTypeDefinition::BooleanObject, Api::Azure::SDKTypeDefinition::StringObject,

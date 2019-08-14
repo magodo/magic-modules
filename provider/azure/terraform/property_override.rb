@@ -22,6 +22,8 @@ module Provider
           super.concat(%i[
             name_in_logs
             hide_from_schema
+            true_value
+            false_value
             custom_schema_definition
             custom_schema_get
             custom_schema_set
@@ -35,6 +37,8 @@ module Provider
           super
           check :name_in_logs, type: ::String
           check :hide_from_schema, type: :boolean, default: false
+          check :true_value, type: [Symbol]
+          check :false_value, type: [Symbol]
           check :custom_schema_definition, type: ::String
           check :custom_schema_get, type: ::String
           check :custom_schema_set, type: ::String
