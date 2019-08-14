@@ -133,7 +133,7 @@
 <%     if property.is_a?(Api::Type::Enum) -%>
     Default: <%= azure_go_literal((sdk_type.go_enum_const_prefix + property.default_value.to_s).to_sym, sdk_package) -%>,
 <%     elsif property.is_a?(Api::Azure::Type::BooleanEnum) -%>
-    Default: <%= lines((property.default_value == property.true_value).to_s) -%>
+    Default: <%= (property.default_value == property.true_value).to_s -%>,
 <%     else -%>
     Default: <%= azure_go_literal(property.default_value) -%>,
 <%     end -%>
