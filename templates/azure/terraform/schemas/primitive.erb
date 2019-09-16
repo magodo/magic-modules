@@ -73,10 +73,10 @@
         },
     },
 <%   elsif property.is_a?(Api::Type::Array) -%>
-<%     unless property.min_size.nil? && data_source_input.empty? -%>
+<%     if !property.min_size.nil? && data_source_input.empty? -%>
     MinItems: <%= property.min_size %>,
 <%     end -%>
-<%     unless property.max_size.nil? && data_source_input.empty? -%>
+<%     if !property.max_size.nil? && data_source_input.empty? -%>
     MaxItems: <%= property.max_size %>,
 <%     end -%>
 <%     if property.item_type.is_a?(Api::Type::NestedObject) -%>
