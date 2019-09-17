@@ -2,7 +2,7 @@
     format_str = '%s'
     case sdk_marshal.sdktype.type_definition
     when Api::Azure::SDKTypeDefinition::Integer32Object, Api::Azure::SDKTypeDefinition::Integer64Object
-      format_str = 'int(%s)'
+      format_str = 'int(*%s)'
     end
 -%>
 <%  if output_var == 'd' -%>

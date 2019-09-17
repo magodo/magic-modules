@@ -79,7 +79,7 @@ func expand<%= sdk_marshal.resource -%><%= descriptor.func_name -%>(input <%= go
 <%          nested_properties.each do |prop| -%>
 <%            var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_marshal.sdktype.type_definitions).go_variable_name -%>
 <%            output_var = var_name || prop.name.camelcase(:lower) -%>
-<%=           lines(build_schema_property_get('v', output_var, prop, sdk_marshal, 4)) -%>
+<%=           lines(build_schema_property_get('v', output_var, prop, sdk_marshal, 4)) if !prop.output -%>
 <%          end -%>
 
     result := <%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%>{
@@ -93,7 +93,7 @@ func expand<%= sdk_marshal.resource -%><%= descriptor.func_name -%>(input <%= go
 <%          nested_properties.each do |prop| -%>
 <%            var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_marshal.sdktype.type_definitions).go_variable_name -%>
 <%            output_var = var_name || prop.name.camelcase(:lower) -%>
-<%=           lines(build_schema_property_get('v', output_var, prop, sdk_marshal, 8)) -%>
+<%=           lines(build_schema_property_get('v', output_var, prop, sdk_marshal, 8)) if !prop.output -%>
 <%          end -%>
 
         result := <%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%>{
