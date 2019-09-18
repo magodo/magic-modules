@@ -2,11 +2,15 @@
     format_str = '%s'
     case sdk_marshal.sdktype.type_definition
     when Api::Azure::SDKTypeDefinition::Integer32Object, Api::Azure::SDKTypeDefinition::Integer64Object
-      format_str = 'int(*%s)'
+      format_str = 'int(%s)'
     end
 -%>
 <%  if output_var == 'd' -%>
+<%    if sdk_marshal.sdktype.type_definition.is_a?(Api::Azure::SDKTypeDefinition::Integer32Object) || sdk_marshal.sdktype.type_definition.is_a?(Api::Azure::SDKTypeDefinition::Integer64Object) -%>
+d.Set("<%= prop_name -%>", <%= format_str % "*#{input_var}" -%>)
+<%    else -%>
 d.Set("<%= prop_name -%>", <%= format_str % input_var -%>)
+<%    end -%>
 <%  elsif property.is_a? Api::Type::Enum -%>
 <%= output_var -%>["<%= prop_name -%>"] = <%= lines(format_str % "#{input_var}") -%>
 <%  else -%>
