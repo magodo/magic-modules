@@ -9,7 +9,7 @@ utils.ExpandStringSlice(<%= property.name.camelcase(:lower) -%>
 <%  elsif property.is_a?(Api::Type::KeyValuePairs) -%>
 utils.ExpandKeyValuePairs(<%= property.name.camelcase(:lower) -%>
 <%  else -%>
-<%    expand_func_name = sdk_marshal.enqueue(property) -%>
+<%    expand_func_name = sdk_marshal.enqueue(property, $global_expand_queue) -%>
 expand<%= sdk_marshal.resource -%><%= expand_func_name -%>(<%= property.name.camelcase(:lower) -%>
 <%  end -%>
 )<%= ',' if in_structure -%>

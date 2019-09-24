@@ -37,10 +37,12 @@ module Provider
             MarshalDescriptor.new @package, @resource, @queue, sdktype, (properties || @properties)
           end
 
-          def enqueue(property)
+          def enqueue(property, global_queue)
             ef_desc = ExpandFlattenDescriptor.new(property, self)
             exist = @queue.find{|q| q.equals?(ef_desc)}
-            @queue << ef_desc if exist.nil?
+            global_exist = global_queue.find{|q| q.equals?(ef_desc)}
+            @queue << ef_desc if global_exist.nil?
+            global_queue << ef_desc if global_exist.nil?
             (exist || ef_desc).func_name
           end
         end

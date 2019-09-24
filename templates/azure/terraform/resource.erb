@@ -24,6 +24,8 @@ package azurerm
     azure_client_name = object.azure_sdk_definition.go_client
     sdk_package = object.azure_sdk_definition.go_client_namespace
 
+    $global_expand_queue = Array.new unless defined? $global_expand_queue
+    $global_flatten_queue = Array.new unless defined? $global_flatten_queue
     expand_queue = Array.new
     flatten_queue = Array.new
 
