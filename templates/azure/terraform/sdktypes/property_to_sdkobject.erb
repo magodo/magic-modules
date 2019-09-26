@@ -16,7 +16,7 @@
           direct_children << sub_api_path if sub_paths.length > 2
           direct_children << child_api_path if sub_paths.length == 2
         end
-      end
+      end if !prop.output
     end
 
     direct_children.to_a.sort.each do |child_api_path|
