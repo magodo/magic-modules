@@ -31,7 +31,12 @@ module Provider
               .transform_values do |v|
                 v.is_a?(String) && !v.match(/\$\{.+\}/).nil? ? :AttrSet : v
               end
-            flatten_example_properties_to_check(example_props, true)
+            includes = example.property_check_includes
+            excludes = example.property_check_excludes
+            flat_properties = flatten_example_properties_to_check(example_props, true)
+            return include_example_properties_to_check(flat_properties, includes) if includes
+            return exlcude_example_properties_to_check(flat_properties, excludes) if excludes
+            return flat_properties
           end
 
           def flatten_example_properties_to_check(properties, has_nested_item)
@@ -42,13 +47,13 @@ module Provider
               if pv.is_a?(Hash)
                  flat_properties["#{pn}.%"] = pv.length if !pn.include?('.')
                 pv.each do |key, val|
-                  flat_properties["#{pn}.#{key}"] = val
+                  flat_properties["#{pn}.#{key}"] = val if is_valid_value_for_check(val)
                   has_nested_item = true if val.is_a?(Hash) || val.is_a?(Array)
                 end
               elsif pv.is_a?(Array)
                 flat_properties["#{pn}.#"] = pv.length
                 pv.each_index do |ind|
-                  flat_properties["#{pn}.#{ind}"] = pv[ind]
+                  flat_properties["#{pn}.#{ind}"] = pv[ind] if is_valid_value_for_check(pv[ind])
                   has_nested_item = true if pv[ind].is_a?(Hash) || pv[ind].is_a?(Array)
                 end
               else
@@ -56,6 +61,33 @@ module Provider
               end
             end
             return flatten_example_properties_to_check(flat_properties, has_nested_item)
+          end
+
+          def is_valid_value_for_check(value)
+            return !value.is_a?(String) || value.nil? || value[0] != '$'
+          end
+
+          def exlcude_example_properties_to_check(properties_to_check, excludes)
+            return properties_to_check unless excludes
+            single_excludes = excludes.select{|elem| elem[-1] != '*'}
+            recursive_excludes = excludes.select{|elem| elem[-1] == '*'}
+            properties_to_check.select{|key, val|
+              in_recursive_excludes = false
+              recursive_excludes.each{|k| in_recursive_excludes ||= k[0..k.length-2] == key[0..k.length-2]}
+              !single_excludes.include?(key) && !in_recursive_excludes
+            }
+          end
+
+          def include_example_properties_to_check(properties_to_check, includes)
+            return properties_to_check unless includes
+            single_includes = includes.select{|elem| elem[-1] != '*'}
+            recursive_includes = includes.select{|elem| elem[-1] == '*'}
+            filterd_properties = properties_to_check.select{|key, val|
+              in_recursive_includes = false
+              recursive_includes.each{|k| in_recursive_includes ||= k[0..k.length-2] == key[0..k.length-2]}
+              single_includes.include?(key) || in_recursive_includes
+            }
+            return filterd_properties
           end
         end
       end

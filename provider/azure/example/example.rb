@@ -32,6 +32,8 @@ module Provider
       attr_reader :description
       attr_reader :prerequisites
       attr_reader :properties
+      attr_reader :property_check_excludes
+      attr_reader :property_check_includes
 
       def validate
         super
@@ -39,6 +41,8 @@ module Provider
         check :description, type: ::String
         check :prerequisites, type: ::Array, item_type: ExampleReference
         check :properties, type: ::Hash, required: true
+        check :property_check_excludes, type: ::Array, item_type: ::String, required: false
+        check :property_check_includes, type: ::Array, item_type: ::String, required: false
       end
     end
   end
