@@ -2,7 +2,7 @@
 <%  if property.is_a?(Api::Azure::Type::ISO8601Duration) -%>
 utils.String(<%= property.name.camelcase(:lower) -%>
 <%  elsif property.is_a?(Api::Azure::Type::ISO8601DateTime) -%>
-<%    sdk_marshal.enqueue(property) -%>
+<%    sdk_marshal.enqueue(property, $global_expand_queue) -%>
 convertStringToDate(<%= property.name.camelcase(:lower) -%>
 <%  end -%>
 )<%= ',' if in_structure -%>
