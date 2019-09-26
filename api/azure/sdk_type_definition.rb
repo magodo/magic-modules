@@ -87,6 +87,9 @@ module Api
         end
       end
 
+      class EnumArrayObject < EnumObject
+      end
+
       class ISO8601DurationObject < StringObject
       end
 

@@ -98,6 +98,16 @@
 <%     else # array of basic types -%>
     Elem: &schema.Schema{
         Type: <%= tf_types[property.item_type.class] -%>,
+<%      if property.item_type.is_a?(Api::Type::Enum)
+          enum_values = property.item_type.values
+          sdk_type = get_sdk_typedef_by_references(property.azure_sdk_references, object.azure_sdk_definition.create.request)
+-%>
+        ValidateFunc: validation.StringInSlice([]string{
+<%      enum_values.each do |val| -%>
+            <%= azure_go_literal((sdk_type.go_enum_const_prefix + val.to_s).to_sym, sdk_package) -%>,
+<%      end -%>
+       }, false),
+<%     end -%>
     },
 <%     end -%>
 <%     if property.is_set -%>
