@@ -46,7 +46,8 @@ module Provider
               'templates/azure/terraform/sdktypes/datetime_and_duration_field_assign.erb'
             when Api::Azure::SDKTypeDefinition::BooleanObject, Api::Azure::SDKTypeDefinition::StringObject,
                  Api::Azure::SDKTypeDefinition::IntegerObject, Api::Azure::SDKTypeDefinition::FloatObject,
-                 Api::Azure::SDKTypeDefinition::StringArrayObject, Api::Azure::SDKTypeDefinition::StringMapObject
+                 Api::Azure::SDKTypeDefinition::StringArrayObject, Api::Azure::SDKTypeDefinition::StringMapObject,
+                 Api::Azure::SDKTypeDefinition::EnumArrayObject
               'templates/azure/terraform/sdktypes/expand_func_field_assign.erb'
             when Api::Azure::SDKTypeDefinition::Integer32Object, Api::Azure::SDKTypeDefinition::Integer64Object
               'templates/azure/terraform/sdktypes/integer_field_assign.erb'
