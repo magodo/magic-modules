@@ -91,6 +91,7 @@ module Api
         end
 
         def merge_overrides!(overrides)
+            super
           @go_enum_type_name = overrides.go_enum_type_name unless overrides.go_enum_type_name.nil?
           @go_enum_const_prefix = overrides.go_enum_const_prefix unless overrides.go_enum_const_prefix.nil?
         end
