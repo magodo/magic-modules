@@ -86,6 +86,11 @@ module Api
           check :go_enum_type_name, type: ::String
           check :go_enum_const_prefix, type: ::String, default: ''
         end
+
+        def merge_overrides!(overrides)
+          @go_enum_type_name = overrides.go_enum_type_name unless overrides.go_enum_type_name.nil?
+          @go_enum_const_prefix = overrides.go_enum_const_prefix unless overrides.go_enum_const_prefix.nil?
+        end
       end
 
       class EnumArrayObject < EnumObject
