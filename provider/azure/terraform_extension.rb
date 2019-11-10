@@ -112,6 +112,18 @@ module Provider
         data.generate('templates/azure/terraform/datasource.html.markdown.erb', filepath, self)
       end
 
+      def build_ef_func_name(resource_name, type_name, compact: false)
+        result = resource_name + type_name
+        # compact resource_name and type_name with potential overlapping
+        if compact
+          (0...type_name.length).each do |idx|
+            if resource_name.end_with? type_name[0..idx]
+              result = resource_name + type_name[idx + 1..-1]
+            end
+          end
+        end
+        result
+      end
     end
   end
 end
