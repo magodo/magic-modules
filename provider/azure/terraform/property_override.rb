@@ -28,6 +28,7 @@ module Provider
             custom_schema_get
             custom_schema_set
             custom_sdkfield_assign
+            compact_ef_func_name
           ])
         end
 
@@ -43,6 +44,7 @@ module Provider
           check :custom_schema_get, type: ::String
           check :custom_schema_set, type: ::String
           check :custom_sdkfield_assign, type: ::String
+          check :compact_ef_func_name, {type: :boolean, default: false}
         end
       end
 
