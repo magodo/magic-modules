@@ -10,6 +10,6 @@ utils.ExpandStringSlice(<%= property.name.camelcase(:lower) -%>
 utils.ExpandKeyValuePairs(<%= property.name.camelcase(:lower) -%>
 <%  else -%>
 <%    expand_func_name = sdk_marshal.enqueue(property, $global_expand_queue) -%>
-expand<%= sdk_marshal.resource -%><%= expand_func_name -%>(<%= property.name.camelcase(:lower) -%>
+expand<%= build_ef_func_name(sdk_marshal.resource, expand_func_name, compact: property.compact_ef_func_name) -%>(<%= property.name.camelcase(:lower) -%>
 <%  end -%>
 )<%= ',' if in_structure -%>
