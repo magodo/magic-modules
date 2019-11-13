@@ -34,7 +34,7 @@ func expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(prope
 
 <%      property.value_type.nested_properties.each do |prop| -%>
 <%        next if prop.name == property.key_name -%>
-    transformed<%= titlelize_property(prop) -%>, err := expand<%= sdk_marshal.resource -%><%= titlelize_property(property) -%><%= titlelize_property(prop) -%>(original["<%= Google::StringUtils.underscore(prop.name) -%>"], d, config)
+    transformed<%= titlelize_property(prop) -%>, err := expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(property), compact: property.compact_ef_func_name) -%><%= titlelize_property(prop) -%>(original["<%= Google::StringUtils.underscore(prop.name) -%>"], d, config)
     if err != nil {
       return nil, err
     }
