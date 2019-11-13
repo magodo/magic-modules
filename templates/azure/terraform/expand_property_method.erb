@@ -23,7 +23,7 @@ func convertStringToDate(input interface{}) *date.Time {
   return &result
 }
 <%    elsif property.is_a?(Api::Type::Map) -%>
-func expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(property), compact: property.compact_ef_func_name) -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]interface{}, error) {
+func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titlelize_property(property) : property.custom_ef_func_name -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]interface{}, error) {
   if v == nil {
     return map[string]interface{}{}, nil
   }
@@ -34,7 +34,7 @@ func expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(prope
 
 <%      property.value_type.nested_properties.each do |prop| -%>
 <%        next if prop.name == property.key_name -%>
-    transformed<%= titlelize_property(prop) -%>, err := expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(property), compact: property.compact_ef_func_name) -%><%= titlelize_property(prop) -%>(original["<%= Google::StringUtils.underscore(prop.name) -%>"], d, config)
+    transformed<%= titlelize_property(prop) -%>, err := expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titlelize_property(property) : property.custom_ef_func_name -%><%= titlelize_property(prop) -%>(original["<%= Google::StringUtils.underscore(prop.name) -%>"], d, config)
     if err != nil {
       return nil, err
     }
@@ -52,7 +52,7 @@ func expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(prope
 <%#      lines(build_azure_expand_method(sdk_marshal.resource + titlelize_property(property), prop), 1) -%>
 <%      end -%>
 <%    elsif property.is_a?(Api::Type::KeyValuePairs) -%>
-func expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(property), compact: property.compact_ef_func_name) -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]string, error) {
+func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titlelize_property(property) : property.custom_ef_func_name -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]string, error) {
   if v == nil {
     return map[string]string{}, nil
   }
@@ -63,7 +63,7 @@ func expand<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(prope
   return m, nil
 }
 <%    elsif tf_types.include?(property.class) -%>
-func expand<%= build_ef_func_name(sdk_marshal.resource, descriptor.func_name, compact: property.compact_ef_func_name) -%>(input <%= go_type(property) -%>) *<%= '[]' if property.is_a?(Api::Type::Array) -%><%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%> {
+func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descriptor.func_name : property.custom_ef_func_name -%>(input <%= go_type(property) -%>) *<%= '[]' if property.is_a?(Api::Type::Array) -%><%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%> {
 <%
         if !property.nested_properties.empty?
           nested_properties = property.nested_properties
