@@ -71,7 +71,7 @@ func flatten<%= build_ef_func_name(sdk_marshal.resource, descriptor.func_name, c
     transformed = append(transformed, map[string]interface{}{
       "<%= property.key_name -%>": k,
     <% property.value_type.properties.each do |prop| -%>
-      "<%= Google::StringUtils.underscore(prop.name) -%>": flatten<%= sdk_marshal.resource -%><%= titlelize_property(property) -%><%= titlelize_property(prop) -%>(original["<%= prop.api_name -%>"]),
+      "<%= Google::StringUtils.underscore(prop.name) -%>": flatten<%= build_ef_func_name(sdk_marshal.resource, titlelize_property(property), compact: property.compact_ef_func_name) -%><%= titlelize_property(prop) -%>(original["<%= prop.api_name -%>"]),
     <% end -%>
     })
   }
