@@ -2,7 +2,7 @@
 <% if output_var == 'd' -%>
 d.Set("<%= prop_name -%>", <%= format_str % input_var-%>)
 <% else -%>
-<%   temp_var = prop_name.camelize(:lower) -%>
+<%   temp_var = go_temp_var_name(sdk_marshal.sdktype.type_definition) -%>
 if <%= temp_var -%> := <%= input_var -%>; <%= temp_var -%> != nil {
     <%= output_var -%>["<%= prop_name -%>"] = <%= lines(format_str % "*#{temp_var}") -%>
 }

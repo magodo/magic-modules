@@ -35,6 +35,12 @@ module Provider
         def go_field_name_of_tags(sdk_operation)
           sdk_operation.response['/tags'].go_field_name
         end
+
+        def go_temp_var_name(sdk_type_def, reserved: nil)
+          name = sdk_type_def.go_variable_name || sdk_type_def.go_field_name.underscore.camelcase(:lower) || reserved
+          raise 'No temp var name specified' if name.nil?
+          name
+        end
       end
     end
   end
