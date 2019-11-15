@@ -92,6 +92,11 @@ module Api
 
         def merge_overrides!(overrides)
           super
+          # `overrides` is instance of either SDKTypeDefinitionOverride or
+          # SDKTypeDefinitionOverride::EnumObjectOverride. We only merge type specific
+          # attribute for the latter case.
+          return unless overrides.instance_of? Api::Azure::SDKTypeDefinitionOverride::EnumObjectOverride
+
           @go_enum_type_name = overrides.go_enum_type_name unless overrides.go_enum_type_name.nil?
           @go_enum_const_prefix = overrides.go_enum_const_prefix unless overrides.go_enum_const_prefix.nil?
         end
