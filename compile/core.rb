@@ -169,7 +169,7 @@ module Compile
     # Refer to Compile::Core.compile for full details about the compilation
     # process.
     def compile_file(ctx, source)
-      compile_string(ctx, File.read(source))
+      compile_string(ctx, File.read(source), filename: source)
     rescue StandardError => e
       puts "Error compiling file: #{source}"
       raise e
@@ -232,11 +232,13 @@ module Compile
 
     # Compiles an ERB template using the data from a key-value pair.
     # The key-value pair may be a Hash or a Binding
-    def compile_string(ctx, source)
+    def compile_string(ctx, source, filename: nil)
+      erb = ERB.new(source, trim_mode: '->')
+      erb.filename = filename
       if ctx.is_a? Binding
-        ERB.new(source, trim_mode: '->').result(ctx).split("\n")
+        erb.result(ctx).split("\n")
       elsif ctx.is_a? Hash
-        ERB.new(source, trim_mode: '->').result(
+        erb.result(
           OpenStruct.new(ctx).instance_eval { binding.of_caller(1) }
         ).split("\n")
       else
