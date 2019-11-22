@@ -35,34 +35,6 @@ module Provider
             typedefs[ref]
           end
 
-          def property_to_sdk_field_assignment_template(property, sdk_type)
-            return property.custom_sdkfield_assign unless get_property_value(property, "custom_sdkfield_assign", nil).nil?
-            return 'templates/azure/terraform/schemas/hide_from_schema.erb' if get_property_value(property, "hide_from_schema", false)
-            return 'templates/azure/terraform/sdktypes/plain_var_field_assign.erb' if property.is_a?(Api::Azure::Type::BooleanEnum)
-            case sdk_type
-            when Api::Azure::SDKTypeDefinition::Integer32ArrayObject, Api::Azure::SDKTypeDefinition::Integer64ArrayObject
-              'templates/azure/terraform/sdktypes/integer_array_field_assign.erb'
-            when Api::Azure::SDKTypeDefinition::FloatArrayObject
-              'templates/azure/terraform/sdktypes/float_array_field_assign.erb'
-            when Api::Azure::SDKTypeDefinition::ISO8601DateTimeObject, Api::Azure::SDKTypeDefinition::ISO8601DurationObject
-              'templates/azure/terraform/sdktypes/datetime_and_duration_field_assign.erb'
-            when Api::Azure::SDKTypeDefinition::BooleanObject, Api::Azure::SDKTypeDefinition::StringObject,
-                 Api::Azure::SDKTypeDefinition::IntegerObject, Api::Azure::SDKTypeDefinition::FloatObject,
-                 Api::Azure::SDKTypeDefinition::StringArrayObject, Api::Azure::SDKTypeDefinition::StringMapObject,
-                 Api::Azure::SDKTypeDefinition::EnumArrayObject
-              'templates/azure/terraform/sdktypes/expand_func_field_assign.erb'
-            when Api::Azure::SDKTypeDefinition::Integer32Object, Api::Azure::SDKTypeDefinition::Integer64Object
-              'templates/azure/terraform/sdktypes/integer_field_assign.erb'
-            when Api::Azure::SDKTypeDefinition::EnumObject
-              'templates/azure/terraform/sdktypes/enum_field_assign.erb'
-            when Api::Azure::SDKTypeDefinition::ComplexObject
-              return 'templates/azure/terraform/sdktypes/nested_object_field_assign.erb' if property.nil?
-              'templates/azure/terraform/sdktypes/expand_func_field_assign.erb'
-            else
-              'templates/azure/terraform/sdktypes/unsupport.erb'
-            end
-          end
-
           def property_to_schema_assignment_template(property, sdk_operation, api_path)
             return 'templates/azure/terraform/sdktypes/primitive_schema_assign.erb' if property.is_a?(Api::Azure::Type::BooleanEnum)
             sdk_type = sdk_operation.response[api_path] || sdk_operation.request[api_path]

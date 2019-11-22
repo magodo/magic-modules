@@ -20,7 +20,7 @@
 -%>
 if <%= local_var -%> != <%= go_empty_value(prop) -%> {
 <%        if ancesters.size() == 2 -%>
-    parameters.<%= ancesters.reverse[0..-2].map{|r| sdk_marshal.sdktype.type_definitions[r].go_field_name}.join('.') -%>.<%= lines(build_sdk_field_assignment(prop, sdk_marshal.clone(sdk_reference, [prop]), false)) -%>
+    parameters.<%= ancesters.reverse[0..-2].map{|r| sdk_marshal.sdktype.type_definition.type_definitions[r].go_field_name}.join('.') -%>.<%= lines(sdk_marshal.sdktype.render_property_to_sdk_field(prop, sdk_marshal.clone(sdk_reference, [prop]), false)) -%>
 }
 <%        else -%>
     parameters.<%= ancesters.reverse[0..1].map{|r| sdk_marshal.sdktype.type_definitions[r].go_field_name}.join('.') -%> = &<%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.type_definitions[ancesters[-2]].go_type_name -%>{

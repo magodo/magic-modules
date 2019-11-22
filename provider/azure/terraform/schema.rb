@@ -44,22 +44,6 @@ module Provider
           end
         end
 
-        def expand_func(property)
-          expand_funcs[property.class]
-        end
-
-        def expand_funcs
-          {
-            Api::Type::Boolean => 'utils.Bool',
-            Api::Type::String => 'utils.String',
-            Api::Type::Integer => 'utils.Int',
-            Api::Type::Double => 'utils.Float',
-            Api::Azure::Type::Location => "utils.String",
-            Api::Azure::Type::Tags => 'tags.Expand',
-            Api::Azure::Type::ResourceReference => "utils.String"
-          }
-        end
-
         def schema_property_template(property, is_data_source)
           return property.custom_schema_definition unless get_property_value(property, "custom_schema_definition", nil).nil?
           if property.is_a?(Api::Azure::Type::ResourceGroupName)

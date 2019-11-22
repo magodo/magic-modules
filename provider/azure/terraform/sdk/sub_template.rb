@@ -36,13 +36,6 @@ module Provider
                              prop_name: property.name.underscore
           end
 
-          def build_sdk_field_assignment(property, sdk_marshal, in_structure = true)
-            compile_template property_to_sdk_field_assignment_template(property, sdk_marshal.sdktype.type_definition),
-                             property: property,
-                             sdk_marshal: sdk_marshal,
-                             in_structure: in_structure
-          end
-
           def build_property_to_sdk_object(sdk_marshal, indentation = 4, include_empty = false)
             compile_template 'templates/azure/terraform/sdktypes/property_to_sdkobject.erb',
                              indentation: indentation,

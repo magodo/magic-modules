@@ -25,7 +25,19 @@ module Provider
           def initialize(property, sdkmarshal)
             @property = property
             @sdkmarshal = sdkmarshal
-            @func_name = @sdkmarshal.sdktype.go_type_name
+            @func_name = build_func_name sdkmarshal.sdktype, property
+            #@func_name = @sdkmarshal.sdktype.go_type_name
+          end
+
+          def build_func_name(sdktype, property)
+            # For ArrayObject needs expand/flatten, since the `go_type_name` indicates the elements'
+            # type, to avoid naming conflict with ComplexObject, we should name the func_name with `Array` suffix.
+            return "#{sdktype.go_type_name}Array" if property.instance_of?(Api::Type::Array)
+
+            # TODO: this will very likely conflict if multiple file defined this method inside same package
+            return 'convertStringToDate' if property.instance_of?(Api::Azure::Type::ISO8601DateTime)
+
+            sdktype.go_type_name
           end
 
           # This function compares the structure (hierarchical structure, declared type and name) of prop1 and prop2.

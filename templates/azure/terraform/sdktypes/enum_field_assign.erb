@@ -1,1 +1,0 @@
-<%= sdk_marshal.sdktype.go_field_name -%><%= in_structure ? ': ' : ' = ' -%><%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.type_definition.go_enum_type_name -%>(<%= property.name.camelcase(:lower) -%>)<%= ',' if in_structure -%>

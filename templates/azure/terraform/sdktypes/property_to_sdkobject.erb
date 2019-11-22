@@ -1,6 +1,7 @@
 <%
     direct_children = Set.new
-    sdk_marshal.properties.sort_by{|p| [p.order, p.name]}.each do |prop|
+    sdk_marshal.properties.reject{|p| p.output}
+                          .sort_by{|p| [p.order, p.name]}.each do |prop|
       prop.azure_sdk_references.select{|ref| sdk_marshal.sdktype.type_definitions.has_key?(ref)}.each do |child_api_path|
         child_type_def = sdk_marshal.sdktype.type_definitions[child_api_path]
         api_path = sdk_marshal.sdktype.typedef_reference
@@ -16,14 +17,16 @@
           direct_children << sub_api_path if sub_paths.length > 2
           direct_children << child_api_path if sub_paths.length == 2
         end
-      end if !prop.output
+      end
     end
 
     direct_children.to_a.sort.each do |child_api_path|
       matched_properties = get_properties_matching_sdk_reference(sdk_marshal.properties, child_api_path)
+      child_sdk_marshal = sdk_marshal.clone(child_api_path)
 -%>
-<%=   lines(build_sdk_field_assignment(nil, sdk_marshal.clone(child_api_path))) if matched_properties.empty? -%>
-<%    matched_properties.each do |property| -%>
-<%=     lines(build_sdk_field_assignment(property, sdk_marshal.clone(child_api_path))) if !property.output-%>
+<%=   lines(child_sdk_marshal.sdktype.type_definition.render_property_to_sdk_field(nil, child_sdk_marshal)) if matched_properties.empty? -%>
+<%    matched_properties.reject{|p| p.output}
+                        .each do |property| -%>
+<%=     lines(child_sdk_marshal.sdktype.type_definition.render_property_to_sdk_field(property, child_sdk_marshal)) -%>
 <%    end -%>
 <%  end -%>
