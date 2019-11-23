@@ -141,13 +141,13 @@ module Api
 
       class FloatObject < SDKTypeDefinition
         render_property_to_sdk_field do |sdk_marshal, property|
-          "utils.Float(float32(#{build_var_name(sdk_marshal, property)}))"
+          "utils.Float(float64(#{build_var_name(sdk_marshal, property)}))"
         end
       end
 
       class FloatArrayObject < SDKTypeDefinition
         render_property_to_sdk_field do |sdk_marshal, property|
-          "utils.ExpandStringFloat32(#{build_var_name(sdk_marshal, property)})"
+          "utils.ExpandFloat64Slice(#{build_var_name(sdk_marshal, property)})"
         end
       end
 
