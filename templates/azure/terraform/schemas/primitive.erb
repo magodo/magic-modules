@@ -41,9 +41,9 @@
     ValidateFunc: validate.NoEmptyStrings,
 <%   end # property.validation.nil?  -%>
 <%   if property.is_a?(Api::Azure::Type::ISO8601DateTime) && property.validation.nil? && !property.output && (data_source_input.empty? || data_source_input.include?(property)) -%>
-    ValidateFunc: validateRFC3339Date,
+    ValidateFunc: validate.ISO8601DateTime,
 <%   elsif property.is_a?(Api::Azure::Type::ISO8601Duration) && property.validation.nil? && !property.output && (data_source_input.empty? || data_source_input.include?(property)) -%>
-    ValidateFunc: validateIso8601Duration(),
+    ValidateFunc:  validate.ISO8601Duration,
 <%   elsif property.is_a?(Api::Type::Enum) && property.validation.nil? && !property.output && (data_source_input.empty? || data_source_input.include?(property)) -%>
 <%
        enum_values = property.values
