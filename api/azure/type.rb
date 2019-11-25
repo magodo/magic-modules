@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'api/type'
+require 'api/azure/type_extension'
 
 module Api
   module Azure

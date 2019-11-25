@@ -16,16 +16,6 @@ module Provider
     module Terraform
       module SDK
         module SubTemplate
-          def build_schema_property_get(input, output, property, sdk_marshal, indentation = 0)
-            compile_template schema_property_get_template(property),
-                             indentation: indentation,
-                             input_var: input,
-                             output_var: output,
-                             sdk_marshal: sdk_marshal,
-                             property: property,
-                             prop_name: property.name.underscore
-          end
-
           def build_schema_property_set(input, output, property, sdk_marshal, indentation = 0)
             compile_template schema_property_set_template(property),
                              indentation: indentation,

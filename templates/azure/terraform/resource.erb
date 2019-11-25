@@ -5,8 +5,8 @@ package azurerm
 <%= lines(compile(object.custom_code.constants)) if object.custom_code.constants -%>
 
 <%
-    properties = object.all_user_properties
-    schema_properties = properties.reject{|p| p.name == 'id' || get_property_value(p, 'hide_from_schema', false)}
+    properties = object.all_user_properties.reject{|p| get_property_value(p, 'hide_from_schema', false)}
+    schema_properties = properties.reject{|p| p.name == 'id'}
     # Fingerprints aren't *really* settable properties, but they behave like one. At Create, they have no value but they
     # can just be read in anyways, and after a Read they will need to be set in every Update.
     settable_properties = properties.reject{ |v| v.output && !v.is_a?(Api::Type::Fingerprint) }.reject(&:url_param_only)
@@ -95,9 +95,8 @@ func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.Res
     ctx := meta.(*ArmClient).StopContext
 
 <%  settable_properties.reject{|p| get_applicable_reference(p.azure_sdk_references, sdk_operation.request).start_with?("/")}.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
-<%    var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_operation.request).go_variable_name -%>
-<%    output_var = var_name || prop.name.camelcase(:lower) -%>
-<%=   lines(build_schema_property_get('d', output_var, prop, sdk_marshal, 4)) -%>
+<%    this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request) -%>
+<%=   this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd') -%>
 <%  end -%>
 
     if features.ShouldResourcesBeImported() && d.IsNewResource() {
@@ -113,10 +112,8 @@ func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.Res
     }
 
 <%  settable_properties.select{|p| get_applicable_reference(p.azure_sdk_references, sdk_operation.request).start_with?("/")}.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
-<%    var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_operation.request).go_variable_name -%>
-<%    special_known_name = (prop.name == 'tags' ? 't' : nil) -%>
-<%    output_var = var_name || special_known_name || prop.name.camelcase(:lower) -%>
-<%=   lines(build_schema_property_get('d', output_var, prop, sdk_marshal, 4)) -%>
+<%    this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request) -%>
+<%=   this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd') -%>
 <%  end -%>
 
     <%= sdk_operation.request['/'].go_variable_name -%> := <%= sdk_package -%>.<%= sdk_operation.request['/'].go_type_name -%>{
@@ -195,10 +192,8 @@ func resource<%= resource_name -%><%= update_func_name_postfix -%>(d *schema.Res
     ctx := meta.(*ArmClient).StopContext
 
 <%  updatable_properties.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
-<%    var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_operation.request).go_variable_name -%>
-<%    special_known_name = (prop.name == 'tags' ? 't' : nil) -%>
-<%    output_var = var_name || special_known_name || prop.name.camelcase(:lower) -%>
-<%=   lines(build_schema_property_get('d', output_var, prop, sdk_marshal, 4)) -%>
+<%    this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request) -%>
+<%=   this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd') -%>
 <%  end -%>
 
     <%= sdk_operation.request['/'].go_variable_name -%> := <%= sdk_package -%>.<%= sdk_operation.request['/'].go_type_name -%>{

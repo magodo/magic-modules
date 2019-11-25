@@ -76,12 +76,11 @@ func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descript
     }
     v := input[0].(map[string]interface{})
 
-<%          nested_properties.each do |prop| -%>
-<%            var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_marshal.sdktype.type_definitions).go_variable_name -%>
-<%            special_known_name = (prop.name == 'tags' ? 't' : nil) -%>
-<%            output_var = var_name || special_known_name || prop.name.camelcase(:lower) -%>
-<%=           lines(build_schema_property_get('v', output_var, prop, sdk_marshal, 4)) if !prop.output -%>
-<%          end -%>
+<%          nested_properties.reject{ |prop| prop.output }.each do |prop|
+              this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request)
+              this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'v')
+            end
+-%>
 
     result := <%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%>{
 <%=         lines(build_property_to_sdk_object(sdk_marshal.clone(nil, nested_properties), 8)) -%>
@@ -91,12 +90,11 @@ func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descript
     results := make([]<%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%>, 0)
     for _, item := range input {
         v := item.(map[string]interface{})
-<%          nested_properties.each do |prop| -%>
-<%            var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_marshal.sdktype.type_definitions).go_variable_name -%>
-<%            special_known_name = (prop.name == 'tags' ? 't' : nil) -%>
-<%            output_var = var_name || special_known_name || prop.name.camelcase(:lower) -%>
-<%=           lines(build_schema_property_get('v', output_var, prop, sdk_marshal, 8)) if !prop.output -%>
-<%          end -%>
+<%          nested_properties.reject{ |prop| prop.output }.each do |prop|
+              this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request)
+              this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'v')
+            end
+-%>
 
         result := <%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%>{
 <%=         lines(build_property_to_sdk_object(sdk_marshal.clone(nil, nested_properties), 12)) -%>

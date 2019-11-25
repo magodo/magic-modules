@@ -13,17 +13,14 @@
 
 require 'api/object'
 require 'google/string_utils'
-require 'api/azure/type_extension'
 
 module Api
   # Represents a property type
   class Type < Api::Object::Named
-    include Api::Azure::Type::TypeExtension
     # The list of properties (attr_reader) that can be overridden in
     # <provider>.yaml.
     module Fields
       include Api::Object::Named::Properties
-      include Api::Azure::Type::Fields
 
       attr_reader :default_value
       attr_reader :description
@@ -74,7 +71,6 @@ module Api
 
     def validate
       super
-      azure_validate if $target_is_azure
       check :description, type: ::String, required: true
       check :exclude, type: :boolean, default: false, required: true
       check :deprecation_message, type: ::String

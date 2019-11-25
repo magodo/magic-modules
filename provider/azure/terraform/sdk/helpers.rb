@@ -35,6 +35,11 @@ module Provider
             typedefs[ref]
           end
 
+          def get_corresponding_schema_marshal(sdk_marshal, property, req_resp_body)
+            this_api_path = get_applicable_reference(property.azure_sdk_references, req_resp_body)
+            sdk_marshal.clone(this_api_path)
+          end
+
           def property_to_schema_assignment_template(property, sdk_operation, api_path)
             return 'templates/azure/terraform/sdktypes/primitive_schema_assign.erb' if property.is_a?(Api::Azure::Type::BooleanEnum)
             sdk_type = sdk_operation.response[api_path] || sdk_operation.request[api_path]

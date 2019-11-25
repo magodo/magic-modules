@@ -1,0 +1,13 @@
+<%#
+    @var_name
+    @schema_var_name
+    @prop_name
+    @go_type
+    @func_name
+%>
+<% var_name_raw = "#{var_name}Raw" -%>
+<%= var_name_raw -%> := <%= schema_var_name -%>.Get("<%= prop_name -%>").(<%= go_type -%>)
+<%= var_name -%>, err := <%=  func_name -%>(<%= var_name_raw -%>)
+if err != nil {
+    return fmt.Errorf("Error expanding <%= prop_name -%>: %+v", err)
+}

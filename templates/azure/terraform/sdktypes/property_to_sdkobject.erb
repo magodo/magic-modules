@@ -24,9 +24,9 @@
       matched_properties = get_properties_matching_sdk_reference(sdk_marshal.properties, child_api_path)
       child_sdk_marshal = sdk_marshal.clone(child_api_path)
 -%>
-<%=   lines(child_sdk_marshal.sdktype.type_definition.render_property_to_sdk_field(nil, child_sdk_marshal)) if matched_properties.empty? -%>
+<%=   lines(child_sdk_marshal.sdktype.type_definition.render_property_to_sdk_field(child_sdk_marshal, nil)) if matched_properties.empty? -%>
 <%    matched_properties.reject{|p| p.output}
                         .each do |property| -%>
-<%=     lines(child_sdk_marshal.sdktype.type_definition.render_property_to_sdk_field(property, child_sdk_marshal)) -%>
+<%=     lines(child_sdk_marshal.sdktype.type_definition.render_property_to_sdk_field(child_sdk_marshal, property)) -%>
 <%    end -%>
 <%  end -%>
