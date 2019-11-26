@@ -25,9 +25,17 @@ module Api
 
     class << SDKTypeDefinition
 
+      def build_ef_func_name(&build_default_name)
+        define_method 'build_ef_func_name' do |property|
+          return property.custom_ef_func_name unless property.custom_ef_func_name.nil?
+
+          build_default_name.call(sdk_marshal, property)
+        end
+      end
+
       def render_property_get(&build_func_name)
         define_method 'render_property_get' do |sdk_marshal, property, schema_var_name, indentation: 4|
-          if build_func_name&.call.nil? # either build_func_name not given or it returns nil
+          if build_func_name&.call(sdk_marshal, property).nil? # either build_func_name not given or it returns nil
             compile_template 'templates/azure/terraform/schemas/property_get.erb',
                              indentation: indentation,
                              var_name: build_var_name(property),
@@ -117,12 +125,20 @@ module Api
         go_variable_name || property.name.camelcase(:lower)
       end
 
+      def build_ef_func_name(sdk_marshal, property)
+        raise NotImplementedError
+      end
+
       def render_property_to_sdk_field(_sdk_marshal, _property, _in_structure: false)
-        ''
+        raise NotImplementedError
       end
 
       def render_property_get(sdk_marshal, property, schema_var_name)
-        ''
+        raise NotImplementedError
+      end
+
+      def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var)
+        raise NotImplementedError
       end
 
       class BooleanObject < SDKTypeDefinition
@@ -130,6 +146,15 @@ module Api
 
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.Bool(#{var_name})"
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "#{resp_var}.#{sdk_marshal.sdktype.type_definition.go_field_name}"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
         end
       end
 
@@ -139,6 +164,15 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.Int(#{var_name})"
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "#{resp_var}.#{sdk_marshal.sdktype.type_definition.go_field_name}"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
       end
 
       class Integer32Object < SDKTypeDefinition
@@ -146,6 +180,15 @@ module Api
 
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.Int32(int32(#{var_name}))"
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "int(*#{resp_var}.#{sdk_marshal.sdktype.type_definition.go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
         end
       end
 
@@ -155,6 +198,15 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.Int64(int64(#{var_name}))"
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "int(*#{resp_var}.#{go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
       end
 
       class Integer32ArrayObject < SDKTypeDefinition
@@ -162,6 +214,15 @@ module Api
 
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.ExpandInt32Slice(#{var_name})"
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "utils.FlattenInt32Slice(#{resp_var}.#{go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set_with_error.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
         end
       end
 
@@ -171,6 +232,15 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.ExpandInt64Slice(#{var_name})"
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "utils.FlattenInt64Slice(#{resp_var}.#{go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set_with_error.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
       end
 
       class FloatObject < SDKTypeDefinition
@@ -179,6 +249,15 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.Float(float64(#{var_name}))"
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "#{resp_var}.#{go_field_name}"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
       end
 
       class FloatArrayObject < SDKTypeDefinition
@@ -186,6 +265,15 @@ module Api
 
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.ExpandFloat64Slice(#{var_name})"
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "utils.FlattenFloat64Slice(#{resp_var}.#{go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set_with_error.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
         end
       end
 
@@ -196,6 +284,33 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.String(#{var_name})"
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          return render_sdk_field_to_property_for_location(sdk_marshal, property, schema_var_name, resp_var, indentation: indentation) if property.instance_of? Api::Azure::Type::Location
+
+          # Special handling for id property corresponding to url parameters
+          value = if id_portion.nil?
+                    "#{resp_var}.#{go_field_name}"
+                  else
+                    go_variable_name
+                  end
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
+
+        private
+
+        def render_sdk_field_to_property_for_location(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          compile_template 'templates/azure/terraform/schemas/location_set.erb',
+                           indentation: indentation,
+                           input_var: "#{resp_var}.Location",
+                           output_var: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
+
       end
 
       class EnumObject < SDKTypeDefinition
@@ -208,6 +323,15 @@ module Api
           else
             "#{sdk_marshal.package}.#{sdk_marshal.sdktype.type_definition.go_enum_type_name}(#{var_name})"
           end
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "string(#{resp_var}.#{go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
         end
 
         attr_reader :go_enum_type_name
@@ -232,10 +356,20 @@ module Api
       end
 
       class EnumArrayObject < SDKTypeDefinition
+        build_ef_func_name do |sdk_marshal, property|
+          "#{sdk_marshal.resource}#{go_type_name}Array"
+        end
+
         render_property_get
 
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
+          # TODO: side effect and error-prone (see enqueue implementation)
           "expand#{sdk_marshal.enqueue(property, $global_expand_queue)}(#{var_name})"
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          # TODO
+          raise NotImplementedError
         end
       end
 
@@ -245,6 +379,15 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.String(#{var_name})"
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "#{resp_var}.#{go_field_name}"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
       end
 
       class ISO8601DateTimeObject < SDKTypeDefinition
@@ -253,13 +396,25 @@ module Api
           "datetime.ParseUTC"
         end
 
-        # TODO: side effect and error-prone (see enqueue implementation)
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "&date.Time{#{var_name}}"
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "(#{resp_var}.#{go_field_name}).String()"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
         end
       end
 
       class ComplexObject < SDKTypeDefinition
+        build_ef_func_name do |sdk_marshal, property|
+          "#{sdk_marshal.resource}#{go_type_name}"
+        end
+
         render_property_get do |sdk_marshal, property|
           # TODO: side effect
           next "expand#{sdk_marshal.enqueue(property, $global_expand_queue)}" unless property.nil?
@@ -268,11 +423,24 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           next var_name unless property.nil?
 
+          # For top level complex object (a.k.a. '/parameters')
           <<~EOF
             &#{sdk_marshal.package}.#{sdk_marshal.sdktype.go_type_name}{
             #{build_property_to_sdk_object(sdk_marshal)}
             }
           EOF
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          # TODO: side effect
+          flatten_func_name = "flatten#{sdk_marshal.enqueue(property, $global_flatten_queue)}"
+          value = "#{flatten_func_name}(#{resp_var}.#{go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set_with_flatten.erb',
+                           indentation: indentation,
+                           var_name: build_var_name(property),
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
         end
       end
 
@@ -282,9 +450,22 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           "utils.ExpandStringSlice(#{var_name})"
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          value = "utils.FlattenStringSlice(#{resp_var}.#{go_field_name})"
+          compile_template 'templates/azure/terraform/schemas/property_set.erb',
+                           indentation: indentation,
+                           value: value,
+                           schema_var_name: schema_var_name,
+                           prop_name: property.name.camelcase(:lower)
+        end
       end
 
       class ComplexArrayObject < SDKTypeDefinition
+        build_ef_func_name do |sdk_marshal, property|
+          "#{sdk_marshal.resource}#{go_type_name}Array"
+        end
+
         render_property_get do |sdk_marshal, property|
           "expand#{sdk_marshal.enqueue(property, $global_expand_queue)}"
         end
@@ -292,9 +473,18 @@ module Api
         render_property_to_sdk_field do |sdk_marshal, property, var_name|
           var_name
         end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          # TODO
+          raise NotImplementedError
+        end
       end
 
       class StringMapObject < SDKTypeDefinition
+        build_ef_func_name do |sdk_marshal, property|
+          "#{sdk_marshal.resource}#{property.name.titleize}"
+        end
+
         def build_var_name(property)
           return 't' if property.instance_of? Api::Azure::Type::Tags
           super
@@ -307,6 +497,23 @@ module Api
           next 'tags.Expand(t)' if property.instance_of? Api::Azure::Type::Tags
           # TODO
           #"#{expand_func}(#{var_name})"
+        end
+
+        def render_sdk_field_to_property(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          return render_sdk_field_to_property_for_tags(sdk_marshal, property, schema_var_name, resp_var, indentation: indentation) if property.instance_of? Api::Azure::Type::Tags
+
+          # TODO
+          raise NotImplementedError
+        end
+
+        private
+
+        def render_sdk_field_to_property_for_tags(sdk_marshal, property, schema_var_name, resp_var, indentation: 4)
+          # NOTE: We skip tag here on purpose, coding style demands to set tag on function return
+          # compile_template 'templates/azure/terraform/schemas/tags_set.erb',
+          #                  indentation: indentation,
+          #                  input_var: "#{resp_var}.#{go_field_name}",
+          #                  output_var: schema_var_name
         end
       end
     end

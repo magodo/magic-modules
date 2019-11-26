@@ -1,0 +1,11 @@
+<%#
+    @var_name
+    @value
+    @schema_var_name
+    @prop_name
+-%>
+<%= var_name %>, err := <%= value %>
+if err != nil {
+  return fmt.Errorf("Error flattening <%= prop_name %>: %+v", err)
+}
+<%= schema_var_name %>.Set("<%= prop_name %>", <%= var_name %>)

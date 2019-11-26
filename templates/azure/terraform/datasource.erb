@@ -36,7 +36,7 @@ func dataSource<%= resource_name -%>Read(d *schema.ResourceData, meta interface{
 
 <%  input_properties.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
 <%    this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request) -%>
-<%=   this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd') -%>
+<%=   lines(this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd')) -%>
 <%  end -%>
 
     resp, err := <%= lines(build_sdk_func_invocation(sdk_operation)) -%>

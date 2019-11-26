@@ -96,7 +96,7 @@ func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.Res
 
 <%  settable_properties.reject{|p| get_applicable_reference(p.azure_sdk_references, sdk_operation.request).start_with?("/")}.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
 <%    this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request) -%>
-<%=   this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd') -%>
+<%=   lines(this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd')) -%>
 <%  end -%>
 
     if features.ShouldResourcesBeImported() && d.IsNewResource() {
@@ -113,7 +113,7 @@ func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.Res
 
 <%  settable_properties.select{|p| get_applicable_reference(p.azure_sdk_references, sdk_operation.request).start_with?("/")}.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
 <%    this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request) -%>
-<%=   this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd') -%>
+<%=   lines(this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd')) -%>
 <%  end -%>
 
     <%= sdk_operation.request['/'].go_variable_name -%> := <%= sdk_package -%>.<%= sdk_operation.request['/'].go_type_name -%>{
@@ -193,7 +193,7 @@ func resource<%= resource_name -%><%= update_func_name_postfix -%>(d *schema.Res
 
 <%  updatable_properties.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
 <%    this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request) -%>
-<%=   this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd') -%>
+<%=   lines(this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'd')) -%>
 <%  end -%>
 
     <%= sdk_operation.request['/'].go_variable_name -%> := <%= sdk_package -%>.<%= sdk_operation.request['/'].go_type_name -%>{

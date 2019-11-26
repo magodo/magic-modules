@@ -23,7 +23,7 @@ func convertStringToDate(input interface{}) *date.Time {
   return &result
 }
 <%    elsif property.is_a?(Api::Type::Map) -%>
-func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titlelize_property(property) : property.custom_ef_func_name -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]interface{}, error) {
+func expand<%= sdk_marshal.sdk_type.type_definition.build_ef_func_name(sdk_marshal, property) -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]interface{}, error) {
   if v == nil {
     return map[string]interface{}{}, nil
   }
@@ -34,7 +34,7 @@ func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titleliz
 
 <%      property.value_type.nested_properties.each do |prop| -%>
 <%        next if prop.name == property.key_name -%>
-    transformed<%= titlelize_property(prop) -%>, err := expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titlelize_property(property) : property.custom_ef_func_name -%><%= titlelize_property(prop) -%>(original["<%= Google::StringUtils.underscore(prop.name) -%>"], d, config)
+    transformed<%= titlelize_property(prop) -%>, err := expand<%= sdk_marshal.sdk_type.type_definition.build_ef_func_name(sdk_marshal, property) -%><%= titlelize_property(prop) -%>(original["<%= Google::StringUtils.underscore(prop.name) -%>"], d, config)
     if err != nil {
       return nil, err
     }
@@ -52,7 +52,7 @@ func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titleliz
 <%#      lines(build_azure_expand_method(sdk_marshal.resource + titlelize_property(property), prop), 1) -%>
 <%      end -%>
 <%    elsif property.is_a?(Api::Type::KeyValuePairs) -%>
-func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titlelize_property(property) : property.custom_ef_func_name -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]string, error) {
+func expand<%= sdk_marshal.sdk_type.type_definition.build_ef_func_name(sdk_marshal, property) -%>(v interface{}, d *schema.ResourceData, config *Config) (map[string]string, error) {
   if v == nil {
     return map[string]string{}, nil
   }
@@ -63,7 +63,7 @@ func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titleliz
   return m, nil
 }
 <%    elsif tf_types.include?(property.class) -%>
-func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descriptor.func_name : property.custom_ef_func_name -%>(input <%= go_type(property) -%>) *<%= '[]' if property.is_a?(Api::Type::Array) -%><%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%> {
+func expand<%= sdk_marshal.sdk_type.type_definition.build_ef_func_name(sdk_marshal, property) -%>(input <%= go_type(property) -%>) *<%= '[]' if property.is_a?(Api::Type::Array) -%><%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%> {
 <%
         if !property.nested_properties.empty?
           nested_properties = property.nested_properties
@@ -78,7 +78,7 @@ func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descript
 
 <%          nested_properties.reject{ |prop| prop.output }.each do |prop|
               this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request)
-              this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'v')
+              lines(this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'v'))
             end
 -%>
 
@@ -92,7 +92,7 @@ func expand<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descript
         v := item.(map[string]interface{})
 <%          nested_properties.reject{ |prop| prop.output }.each do |prop|
               this_sdk_marshal =  get_corresponding_schema_marshal(sdk_marshal, prop, sdk_operation.request)
-              this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'v')
+              lines(this_sdk_marshal.sdktype.type_definition.render_property_get(this_sdk_marshal, prop, 'v'))
             end
 -%>
 

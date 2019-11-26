@@ -1,0 +1,8 @@
+<%#
+    @value
+    @schema_var_name
+    @prop_name
+-%>
+if err := <%= schema_var_name %>.Set("<%= prop_name %>", <%= value %>); err != nil {
+    return fmt.Errorf("Error setting <%= prop_name %>: %+v", err)
+}

@@ -22,7 +22,7 @@
                            property: property)) -%>
 <% else -%>
 <% if tf_types.include?(property.class) -%>
-func flatten<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descriptor.func_name : property.custom_ef_func_name -%>(input *<%= '[]' if property.is_a?(Api::Type::Array) -%><%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%>) []interface{} {
+func flatten<%= sdk_marshal.sdk_type.type_definition.build_ef_func_name(sdk_marshal, property) -%>(input *<%= '[]' if property.is_a?(Api::Type::Array) -%><%= sdk_marshal.package -%>.<%= sdk_marshal.sdktype.go_type_name -%>) []interface{} {
 <% if property.is_a?(Api::Type::NestedObject) -%>
     if input == nil {
         return make([]interface{}, 0)
@@ -71,7 +71,7 @@ func flatten<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+descrip
     transformed = append(transformed, map[string]interface{}{
       "<%= property.key_name -%>": k,
     <% property.value_type.properties.each do |prop| -%>
-      "<%= Google::StringUtils.underscore(prop.name) -%>": flatten<%= property.custom_ef_func_name.nil? ? sdk_marshal.resource+titlelize_property(property) : property.custom_ef_func_name -%><%= titlelize_property(prop) -%>(original["<%= prop.api_name -%>"]),
+      "<%= Google::StringUtils.underscore(prop.name) -%>": flatten<%= sdk_marshal.sdk_type.type_definition.build_ef_func_name(sdk_marshal, property) -%><%= titlelize_property(prop) -%>(original["<%= prop.api_name -%>"]),
     <% end -%>
     })
   }

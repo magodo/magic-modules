@@ -4,7 +4,7 @@
     @prop_name
     @go_type
     @func_name
-%>
+-%>
 <% var_name_raw = "#{var_name}Raw" -%>
 <%= var_name_raw -%> := <%= schema_var_name -%>.Get("<%= prop_name -%>").(<%= go_type -%>)
 <%= var_name -%>, err := <%=  func_name -%>(<%= var_name_raw -%>)

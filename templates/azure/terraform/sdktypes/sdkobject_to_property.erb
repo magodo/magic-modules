@@ -22,9 +22,10 @@
 
     direct_children.each do |child_api_path|
       matched_properties = get_properties_matching_sdk_reference(sdk_marshal.properties, child_api_path)
+      child_sdk_marshal = sdk_marshal.clone(child_api_path)
 -%>
-<%=   lines(build_schema_assignment(input, output, nil, sdk_marshal.clone(child_api_path))) if matched_properties.empty? -%>
+<%=   lines(child_sdk_marshal.sdktype.type_definition.render_sdk_field_to_property(child_sdk_marshal, nil, 'd', 'resp', indentation: 0)) if matched_properties.empty? -%>
 <%    matched_properties.each do |property| -%>
-<%=     lines(build_schema_assignment(input, output, property, sdk_marshal.clone(child_api_path))) -%>
+<%=     lines(child_sdk_marshal.sdktype.type_definition.render_sdk_field_to_property(child_sdk_marshal, property, 'd', 'resp', indentation: 0)) -%>
 <%    end -%>
 <%  end -%>
