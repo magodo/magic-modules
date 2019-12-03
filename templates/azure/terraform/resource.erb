@@ -92,7 +92,8 @@ func resource<%= resource_name -%><%= prop.name.camelize(:upper) -%>SetStyleDiff
 <%  sdk_marshal = Provider::Azure::Terraform::SDK::MarshalDescriptor.new sdk_package, resource_name, expand_queue, sdktype, settable_properties -%>
 func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.ResourceData, meta interface{}) error {
     client := meta.(*ArmClient).<%= lines(azure_client_name) -%>
-    ctx := meta.(*ArmClient).StopContext
+    ctx, cancel := timeouts.<%= combine_create_update ? "ForCreateUpdate" : "ForCreate"-%>(meta.(*ArmClient).StopContext, d)
+    defer cancel()
 
 <%  settable_properties.reject{|p| get_applicable_reference(p.azure_sdk_references, sdk_operation.request).start_with?("/")}.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
 <%    var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_operation.request).go_variable_name -%>
@@ -166,7 +167,8 @@ func resource<%= resource_name -%><%= create_func_name_postfix -%>(d *schema.Res
 <%  sdk_marshal = Provider::Azure::Terraform::SDK::MarshalDescriptor.new sdk_package, resource_name, flatten_queue, sdktype, output_properties -%>
 func resource<%= resource_name -%>Read(d *schema.ResourceData, meta interface{}) error {
     client := meta.(*ArmClient).<%= lines(azure_client_name) -%>
-    ctx := meta.(*ArmClient).StopContext
+    ctx, cancel := timeouts.ForRead(meta.(*ArmClient).StopContext, d)
+    defer cancel()
 
 <%= lines(build_azure_id_parser(object.azure_sdk_definition.read, object)) -%>
 
@@ -192,9 +194,10 @@ func resource<%= resource_name -%>Read(d *schema.ResourceData, meta interface{})
 <%    sdk_operation = object.azure_sdk_definition.update -%>
 func resource<%= resource_name -%><%= update_func_name_postfix -%>(d *schema.ResourceData, meta interface{}) error {
     client := meta.(*ArmClient).<%= lines(azure_client_name) -%>
-    ctx := meta.(*ArmClient).StopContext
+    ctx, cancel := timeouts.ForUpdate(meta.(*ArmClient).StopContext, d)
+    defer cancel()
 
-<%  updatable_properties.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
+  <%  updatable_properties.sort_by{|p| [p.order, p.name]}.each do |prop| -%>
 <%    var_name = get_sdk_typedef_by_references(prop.azure_sdk_references, sdk_operation.request).go_variable_name -%>
 <%    special_known_name = (prop.name == 'tags' ? 't' : nil) -%>
 <%    output_var = var_name || special_known_name || prop.name.camelcase(:lower) -%>
@@ -230,7 +233,8 @@ func resource<%= resource_name -%><%= update_func_name_postfix -%>(d *schema.Res
 <%  sdk_operation = object.azure_sdk_definition.delete -%>
 func resource<%= resource_name -%>Delete(d *schema.ResourceData, meta interface{}) error {
     client := meta.(*ArmClient).<%= lines(azure_client_name) -%>
-    ctx := meta.(*ArmClient).StopContext
+    ctx, cancel := timeouts.ForDelete(meta.(*ArmClient).StopContext, d)
+    defer cancel()
 
 <%  if object.mutex -%>
     lockName, err := replaceVars(d, config, "<%= object.mutex -%>")
